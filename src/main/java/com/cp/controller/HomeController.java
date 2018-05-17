@@ -16,7 +16,7 @@ public class HomeController extends CommonController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(ModelMap model) {
-        return "index";
+        return "redirect:category/list";
     }
 
     @RequestMapping(value="/404")
