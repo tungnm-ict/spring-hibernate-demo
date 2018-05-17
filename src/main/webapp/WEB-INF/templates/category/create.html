@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/main">
+<head>
+    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">CATE-PROD | Category Detail</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <!-- Page Heading -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="page-header">
+                <b class="text-lg">Create Category</b>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- Page Category Info -->
+    <div class="row">
+        <div class="col-lg-12 margin-bottom">
+            <form method="post" id="formInput"
+                  th:action="@{/category/store}"
+                  th:object="${selectedCategory}"
+                  role="form">
+                <div class="form-group" id="cateFormGroup">
+                    <label class="control-label" for="cateName">Category Name: </label>
+                    <input type="text" class="form-control" name="cateName" id="cateName" th:field="*{categoryName}"
+                           placeholder="Input Category Name...">
+                    <div id="errorDiv" style="display: block">
+                        <label class="control-label" id="errorLabel"></label>
+                    </div>
+                </div>
+                <button id="btnCreate" type="submit" class="btn btn-primary">Create</button>
+                <a th:href="@{/category/list}"
+                   class="btn btn-default">
+                    <i class="fa fa-remove" aria-hidden="true"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <ol class="breadcrumb">
+                <li class="active">
+                    <i class="fa fa-2x fa-list-alt"></i> <strong class="text-md">Attribute List</strong>
+                </li>
+                <button type="button" class="btn btn-success pull-right" data-toggle="modal"
+                        data-target="#attributeModal">
+                    Create New Attribute
+                </button>
+            </ol>
+            <div th:replace="category/component/modal_attribute_detail :: modal_attribute_detail"></div>
+        </div>
+    </div>
+    <!-- Page Attribute List -->
+    <div th:replace="category/component/attribute_list :: attribute_list"></div>
+</section>
+<section layout:fragment="javascript">
+    <script type="text/javascript">
+        var errors = false;
+        var errorAttr = false;
+        var modalType = true;
+        var selectAttribute = {};
+        var attributeList = [];
+        $("#cateName").on("input", function () {
+            var cateName = $("#cateName").val();
+            if (cateName.length == 0) {
+                $("#cateFormGroup").addClass("has-error");
+                $("#errorDiv").css("display", "block");
+                $("#errorLabel").html("Category Name can not be null");
+                errors = true;
+            } else if (cateName.length > 100) {
+                $("#cateFormGroup").addClass("has-error");
+                $("#errorDiv").css("display", "block");
+                $("#errorLabel").html("Category Name must be less than 100");
+                errors = true;
+            } else {
+                $("#cateFormGroup").removeClass("has-error");
+                $("#errorDiv").css("display", "none");
+                $("#errorLabel").html("");
+                errors = false;
+            }
+        });
+        $("#btnCreate").on("click", function () {
+            var index = 0;
+            for (var id in attributeList) {
+                $("#formInput").append("<input type='hidden' name='attributeList[" + index + "].attributeName' value='" + attributeList[id] + "'>");
+                index++;
+            }
+            return !errors;
+        });
+        // VALIDATE ATTRIBUTE
+        $("#attrName").on("input", function () {
+            var attrName = $("#attrName").val();
+            if (attrName.length == 0) {
+                $("#formGroupAttr").addClass("has-error");
+                $("#errorDivAttr").css("display", "block");
+                $("#errorLabelAttr").html("Attribute Name can not be null");
+                errorAttr = true;
+            } else if (attrName.length > 100) {
+                $("#formGroupAttr").addClass("has-error");
+                $("#errorDivAttr").css("display", "block");
+                $("#errorLabelAttr").html("Attribute Name must be less than 100");
+                errorAttr = true;
+            } else {
+                $("#formGroupAttr").removeClass("has-error");
+                $("#errorDivAttr").css("display", "none");
+                $("#errorLabelAttr").html("");
+                errorAttr = false;
+            }
+        });
+        function loadAttributeList() {
+            $('#bodyList').empty();
+            var size = Object.keys(attributeList).length;
+            var index = 0;
+            for (var id in attributeList) {
+                index++;
+                $('#bodyList')
+                    .append('<tr id="attr_' + id + '"><th scope="row">' + index + '</th>' +
+                        '<td id="attrName_' + id + '">' + attributeList[id] + '</td>' +
+                        '<td><a href="#" class="btn btn-success" onclick="showAttributeDetail(' + id + ')">Detail</a></td>\n' +
+                        '<td><a href="#" class="btn btn-danger" onclick="deleteAttribute(' + id + ')">Delete</a></td></tr>');
+            }
+            if (size == 0) {
+                $("#noData").css('display', '');
+            } else {
+                $("#noData").css('display', 'none');
+            }
+        }
+
+        // ADD ATTRIBUTE
+        $("#btnCreateAttribute").on("click", function () {
+            if(errorAttr){
+                return false;
+            }
+            attributeList.push($("#attrName").val());
+            loadAttributeList();
+        })
+        // UPDATE ATTRIBUTE
+        $("#btnUpdateAttribute").on("click", function () {
+            if(errorAttr){
+                return false;
+            }
+            attributeList[selectAttribute['attributeId']] = $("#attrName").val();
+            loadAttributeList();
+            $("#attrName").val('');
+        })
+
+        function deleteAttribute(attributeId) {
+            selectAttribute['attributeId'] = attributeId;
+            selectAttribute['attributeName'] = $("#attrName_" + attributeId).html();
+            var check = confirm("Are you sure delete Attribute: " + selectAttribute['attributeName']);
+            if (check) {
+                delete attributeList[attributeId];
+                loadAttributeList();
+            }
+        }
+
+        function showAttributeDetail(attributeId) {
+            modalType = false;
+            selectAttribute['attributeId'] = attributeId;
+            selectAttribute['attributeName'] = $("#attrName_" + attributeId).html();
+            $("#attrName").val(selectAttribute['attributeName']);
+            $('#attributeModal').modal('show');
+        }
+
+        $('#attributeModal').on('show.bs.modal', function (e) {
+            if (modalType) {//create new
+                $("#attrName").val('');
+                $("#attributeModalTitle").html("Create New Attribute");
+                $("#btnCreateAttribute").css("display", "inline-block");
+                $("#btnUpdateAttribute").css("display", "none");
+            } else {// update
+                $("#attributeModalTitle").html("Attribute Detail");
+                $("#btnCreateAttribute").css("display", "none");
+                $("#btnUpdateAttribute").css("display", "inline-block");
+
+            }
+        })
+        $('#attributeModal').on('hide.bs.modal', function (e) {
+            modalType = true;
+        })
+    </script>
+</section>
+</body>
+</html>

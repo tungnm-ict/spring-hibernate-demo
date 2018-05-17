@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/main">
+<head>
+    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">CATE-PROD | Category Detail</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <th:block th:if="${selectedCategory==null}">
+        <!-- Message -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span>Please Choose one Category to display information !</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-header">
+                    <b class="text-lg">Category Detail</b>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    <th:block th:if="${selectedCategory!=null}">
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-header" th:if="${selectedCategory!=null}">
+                    <b class="text-lg" th:text="${selectedCategory.getCategoryName()}"></b>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+        <!-- Page Category Info -->
+        <div class="row">
+            <div class="col-lg-12 margin-bottom">
+                <form method="post"
+                      th:action="@{/category/{cateId}/update(cateId=${selectedCategory.getCategoryId()})}"
+                      th:object="${selectedCategory}"
+                      role="form">
+                    <div class="form-group" id="cateFormGroup">
+                        <label class="control-label" for="cateName">Category Name: </label>
+                        <input type="text" class="form-control" name="cateName" id="cateName" th:field="*{categoryName}"
+                               th:value="${selectedCategory.getCategoryName()}" placeholder="Input Category Name...">
+                        <div id="errorDiv" style="display: block">
+                            <label class="control-label" id="errorLabel"></label>
+                        </div>
+                    </div>
+                    <button id="btnUpdate" type="submit" class="btn btn-primary">Update</button>
+                    <a th:href="@{/category/{cateId}(cateId=${selectedCategory.getCategoryId()})}"
+                       class="btn btn-default">
+                        <i class="fa fa-remove" aria-hidden="true"></i> Cancel
+                    </a>
+                </form>
+            </div>
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <ol class="breadcrumb">
+                    <li class="active">
+                        <i class="fa fa-2x fa-list-alt"></i> <strong class="text-md">Attribute List</strong>
+                    </li>
+                    <button type="button" class="btn btn-success pull-right" data-toggle="modal"
+                            data-target="#attributeModal">
+                        Create New Attribute
+                    </button>
+                </ol>
+                <div th:replace="category/component/modal_attribute_detail :: modal_attribute_detail"></div>
+            </div>
+        </div>
+        <!-- Page Attribute List -->
+        <div th:replace="category/component/attribute_list :: attribute_list"></div>
+    </th:block>
+</section>
+<section layout:fragment="javascript">
+    <script type="text/javascript">
+        var categoryId = [[${selectedCategory.getCategoryId()}]];
+        var categoryAttributeCount = [[${selectedCategory.getAttributeList().size()}]];
+        var errors = false;
+        var errorAttr=false;
+        var modalType = true;
+        var selectAttribute={};
+        $("#cateName").on("input", function () {
+            var cateName = $("#cateName").val();
+            if (cateName.length == 0) {
+                $("#cateFormGroup").addClass("has-error");
+                $("#errorDiv").css("display", "block");
+                $("#errorLabel").html("Category Name can not be null");
+                errors = true;
+            } else if (cateName.length > 100) {
+                $("#cateFormGroup").addClass("has-error");
+                $("#errorDiv").css("display", "block");
+                $("#errorLabel").html("Category Name must be less than 100");
+                errors = true;
+            } else {
+                $("#cateFormGroup").removeClass("has-error");
+                $("#errorDiv").css("display", "none");
+                $("#errorLabel").html("");
+                errors = false;
+            }
+        });
+        $("#btnUpdate").on("click", function () {
+            return !errors;
+        });
+        // VALIDATE ATTRIBUTE
+        $("#attrName").on("input", function () {
+            var attrName = $("#attrName").val();
+            if (attrName.length == 0) {
+                $("#formGroupAttr").addClass("has-error");
+                $("#errorDivAttr").css("display", "block");
+                $("#errorLabelAttr").html("Attribute Name can not be null");
+                errorAttr = true;
+            } else if (attrName.length > 100) {
+                $("#formGroupAttr").addClass("has-error");
+                $("#errorDivAttr").css("display", "block");
+                $("#errorLabelAttr").html("Attribute Name must be less than 100");
+                errorAttr = true;
+            } else {
+                $("#formGroupAttr").removeClass("has-error");
+                $("#errorDivAttr").css("display", "none");
+                $("#errorLabelAttr").html("");
+                errorAttr = false;
+            }
+        });
+        // ADD ATTRIBUTE
+        $("#btnCreateAttribute").on("click", function () {
+            if(errorAttr){
+                return false;
+            }
+            var postData = {
+                "attributeName": $("#attrName").val(),
+                "categoryId": categoryId
+            };
+            $.ajax({
+                url: '/attribute/store',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                cache: false,
+                success: function (response) {
+                    $("#attrName").val('');
+                    if (response.code != 1000) {
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                        var attribute = JSON.parse(response.attribute_insert);
+                        if (categoryAttributeCount == 0) {
+                            $("#noData").css('display','none');
+                        }
+                        categoryAttributeCount++;
+                        $('#tableAttributeList > tbody:last-child')
+                            .append('<tr id="attr_'+attribute.attributeId+'"><th scope="row">' + categoryAttributeCount + '</th>' +
+                                '<td id="attrName_'+attribute.attributeId+'">' + attribute.attributeName + '</td>' +
+                                '<td><a href="#" class="btn btn-success" onclick="showAttributeDetail('+attribute.attributeId+')">Detail</a></td>\n' +
+                                '<td><a href="#" class="btn btn-danger" onclick="deleteAttribute('+attribute.attributeId+')">Delete</a></td></tr>');
+                    }
+                }
+            });
+        })
+        // UPDATE ATTRIBUTE
+        $("#btnUpdateAttribute").on("click", function () {
+            if(errorAttr){
+                return false;
+            }
+            var postData = {
+                "attributeId":selectAttribute['attributeId'],
+                "attributeName": $("#attrName").val(),
+                "categoryId": categoryId
+            };
+            $.ajax({
+                url: '/attribute/update',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                cache: false,
+                success: function (response) {
+                    $("#attrName").val('');
+                    if (response.code != 1000) {
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                        var attribute = JSON.parse(response.attribute_update);
+                        $("#attrName_"+selectAttribute['attributeId']).html(attribute.attributeName);
+                    }
+                }
+            });
+        })
+        function deleteAttribute(attributeId){
+            selectAttribute['attributeId']=attributeId;
+            selectAttribute['attributeName']=$("#attrName_"+attributeId).html();
+            var check =confirm("Are you sure delete Attribute: "+selectAttribute['attributeName']);
+            if(check){
+                $.ajax({
+                    url: '/attribute/destroy',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: JSON.stringify(attributeId),
+                    cache: false,
+                    success: function (response) {
+                        $("#attrName").val('');
+                        if (response.code != 1000) {
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                            $("#attr_"+attributeId).remove();
+                            categoryAttributeCount--;
+                            if(categoryAttributeCount==0){
+                                $("#noData").css('display','block');
+                            }
+                        }
+                    }
+                })
+            }
+        }
+        function showAttributeDetail(attributeId){
+            modalType=false;
+            selectAttribute['attributeId']=attributeId;
+            selectAttribute['attributeName']=$("#attrName_"+attributeId).html();
+            $("#attrName").val(selectAttribute['attributeName']);
+            $('#attributeModal').modal('show');
+        }
+
+        $('#attributeModal').on('show.bs.modal', function (e) {
+            if(modalType){//create new
+                $("#attrName").val('');
+                $("#attributeModalTitle").html("Create New Attribute");
+                $("#btnCreateAttribute").css("display", "inline-block");
+                $("#btnUpdateAttribute").css("display", "none");
+            }else{// update
+                $("#attributeModalTitle").html("Attribute Detail");
+                $("#btnCreateAttribute").css("display", "none");
+                $("#btnUpdateAttribute").css("display", "inline-block");
+
+            }
+        })
+        $('#attributeModal').on('hide.bs.modal', function (e) {
+            modalType=true;
+        })
+    </script>
+</section>
+</body>
+</html>
