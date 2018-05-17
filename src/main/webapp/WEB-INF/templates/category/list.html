@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/main">
+<head>
+    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">CATE-PROD | Category List</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <th:block th:if="${selectedCategory==null}">
+        <!-- Message -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span>Please Choose one Category to display information !</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-header">
+                    <b class="text-lg">Category</b>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    <th:block th:if="${selectedCategory!=null}">
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-header">
+                    <b class="text-lg" th:text="${selectedCategory.getCategoryName()}"></b>
+                    <div class="pull-right">
+                        <a th:href="@{/category/{cateId}/edit(cateId=*{selectedCategory.getCategoryId()})}"
+                           class="btn btn-default">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Detail
+                        </a>
+                        <form class="form-inline" method="post" style="display: inline-block"
+                              th:action="@{/category/{cateId}/destroy(cateId=*{selectedCategory.getCategoryId()})}"
+                              role="form">
+                            <button id="btnUpdate" type="submit" class="btn btn-danger" onclick="return confirm('Are you sure delete this Category'); ">
+                                <i class="fa fa-remove" aria-hidden="true"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+        <!-- Page Content -->
+        <div class="row">
+            <div class="col-lg-12">
+                <ol class="breadcrumb">
+                    <li class="active">
+                        <i class="fa fa-2x fa-list-alt"></i> <strong class="text-md">Product List</strong>
+                    </li>
+                    <a class="btn btn-primary pull-right" th:href="@{/product/create(categoryId=${selectedCategory.getCategoryId()})}">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Create New Product
+                    </a>
+                </ol>
+            </div>
+        </div>
+        <!-- /.row -->
+        <!--Page Product List Table-->
+        <div th:replace="category/component/product_list :: product_list"></div>
+    </th:block>
+</section>
+</body>
+</html>
