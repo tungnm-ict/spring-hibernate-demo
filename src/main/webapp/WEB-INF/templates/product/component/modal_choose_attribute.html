@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Attribute Detail Modal</title>
+</head>
+<body>
+<!-- Modal Choose Attribute-->
+<div th:fragment="modal_choose_attribute" id="chooseAttributeModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal  content-->
+        <div class="modal-content">
+            <div class="modal-header modal-header-success" id="attributeModalHeader">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"  id="attributeModalTitle">Choose Attribute</h4>
+            </div>
+            <div class="modal-body">
+                <form method="post"
+                      action="#"
+                      role="form">
+                    <div class="form-group" id="divChooseAttribute">
+                        <label for="chooseAttribute">Attribute Name: <span
+                                id="chooseAttributeName"></span></label>
+                        <select class="form-control" name="chooseAttribute" id="chooseAttribute">
+                            <option value="1">Width</option>
+                            <option value="2">Height</option>
+                            <option value="3">Size</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="divAttrName" style="display: none">
+                        <label for="attrName" class="control-label">Attribute Name: </label>
+                        <input type="text" class="form-control" name="attrName" id="attrName" disabled>
+                    </div>
+                    <div class="form-group" id="divAttrValue">
+                        <label for="attrValue" class="control-label">Attribute Value: </label>
+                        <input type="text" class="form-control" name="chooseAttrValue" id="attrValue"
+                               placeholder="Input Attribute Value...">
+                        <div id="errorDivAttr" style="display: block">
+                            <label class="control-label" id="errorLabelAttr"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button id="btnChoose" type="button" class="btn btn-success btn-half" data-dismiss="modal">Choose</button>
+                        <button id="btnUpdateAttribute" type="button" class="btn btn-success btn-half" data-dismiss="modal" style="display: none">Update</button>
+                        <button type="button" class="btn btn-default btn-half pull-right" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
