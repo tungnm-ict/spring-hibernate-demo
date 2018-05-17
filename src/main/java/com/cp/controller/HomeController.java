@@ -18,4 +18,14 @@ public class HomeController extends CommonController {
     public String index(ModelMap model) {
         return "index";
     }
+
+    @RequestMapping(value="/404")
+    public String error404(){
+        return "error/404";
+    }
+
+    @RequestMapping(value="/500")
+    public String error500(){
+        return "error/500";
+    }
 }

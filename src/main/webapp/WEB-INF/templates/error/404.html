@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head th:replace="layout/header :: header">
+    <title>CP | 404 Error</title>
+</head>
+<body class="gray-bg">
+<div class="middle-box text-center animated fadeInDown">
+    <h1 class="text-danger">404</h1>
+    <h3 class="font-bold text-danger">Page Not Found</h3>
+
+    <div class="error-desc">
+        Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.<br/><br/>
+        <a th:href="@{/category}" class="btn btn-danger">
+            GO BACK TO MAIN PAGE
+        </a>
+    </div>
+</div>
+<!-- Mainly scripts -->
+<div th:replace="layout/footer :: footer"></div>
+
+</body>
+</html>

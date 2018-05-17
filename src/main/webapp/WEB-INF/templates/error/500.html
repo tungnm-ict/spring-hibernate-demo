@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head th:replace="layout/header :: header">
+    <title>CP | 500 Error</title>
+</head>
+<body class="gray-bg">
+<div class="middle-box text-center animated fadeInDown">
+    <h1 class="text-warning">500</h1>
+    <h3 class="font-bold text-warning">Internal Server Error</h3>
+
+    <div class="error-desc">
+        The server encountered something unexpected that didn't allow it to complete the request. We apologize.<br/>
+        You can go back to main page:<br/><br/>
+        <a th:href="@{/category}" class="btn btn-warning">
+            GO BACK TO MAIN PAGE
+        </a>
+    </div>
+</div>
+<!-- Mainly scripts -->
+<div th:replace="layout/footer :: footer"></div>
+
+</body>
+</html>
