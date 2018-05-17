@@ -1,0 +1,66 @@
+@startuml
+'skinparam packageStyle rectangle
+'package "" {
+'title <b>System Class Diagram</b>
+node "Controller" {
+    class ProductController
+    class CategoryController
+    class AttributeController
+    class ProductAttributeController
+}
+
+node "Service" {
+    interface ProductService
+    interface CategoryService
+    interface AttributeService
+    interface ProductAttributeService
+
+    class ProductServiceImp
+    class CategoryServiceImp
+    class AttributeServiceImp
+    class ProductAttributeServiceImp
+
+   ProductServiceImp -up-|> ProductService: <<implement>>
+   CategoryServiceImp -up-|> CategoryService: <<implement>>
+   AttributeServiceImp -up-|> AttributeService: <<implement>>
+   ProductAttributeServiceImp -up-|> ProductAttributeService: <<implement>>
+}
+
+ProductController --> ProductService: <<using>>
+ProductController --> CategoryService: <<using>>
+ProductController --> AttributeService: <<using>>
+CategoryController --> CategoryService: <<using>>
+AttributeController --> AttributeService: <<using>>
+ProductAttributeController --> ProductAttributeService: <<using>>
+
+node "DAO" {
+    interface ProductDAO
+    interface CategoryDAO
+    interface AttributeDAO
+    interface ProductAttributeDAO
+
+    class ProductDAOImp
+    class CategoryDAOImp
+    class AttributeDAOImp
+    class ProductAttributeDAOImp
+
+   ProductDAOImp -up-|> ProductDAO: <<implement>>
+   CategoryDAOImp -up-|> CategoryDAO: <<implement>>
+   AttributeDAOImp -up-|> AttributeDAO: <<implement>>
+   ProductAttributeDAOImp -up-|> ProductAttributeDAO: <<implement>>
+}
+
+ProductServiceImp --> ProductDAO: <<using>>
+ProductServiceImp --> ProductAttributeDAO: <<using>>
+CategoryServiceImp --> CategoryDAO: <<using>>
+AttributeServiceImp --> AttributeDAO: <<using>>
+ProductAttributeServiceImp --> ProductAttributeDAO: <<using>>
+
+node "Model" {
+     class Product
+     class Category
+     class Attribute
+     class ProductAttribute
+}
+DAO -- Model:<<import>>
+@enduml

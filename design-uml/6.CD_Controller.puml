@@ -1,0 +1,40 @@
+@startuml
+node "Controller Classes" {
+    class ProductController{
+        - productService: ProductService
+        - categoryService: CategoryService
+        - attributeService: AttributeService
+        + showProducts()
+        + createNewProduct()
+        + doCreateNewProduct()
+        + updateProduct()
+        + doUpdateProduct()
+        + doDeleteProduct()
+    }
+    class CategoryController{
+        - categoryService: CategoryService
+        + showCategories()
+        + createNewCategory()
+        + doCreateNewCategory()
+        + updateCategory()
+        + doUpdateCategory()
+        + doDeleteCategory()
+    }
+    class AttributeController{
+        - attributeService: AttributeService
+        + createNewAttribute()
+        + doCreateNewAttribute()
+        + updateAttribute()
+        + doUpdateAttribute()
+        + doDeleteAttribute()
+    }
+    class ProductAttributeController{
+        - productAttributeService: ProductAttributeService
+        + createNewProductAttribute()
+        + doCreateNewProductAttribute()
+        + updateProductAttribute()
+        + doUpdateProductAttribute()
+        + doDeleteProductAttribute()
+    }
+}
+@enduml

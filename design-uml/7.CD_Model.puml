@@ -1,0 +1,41 @@
+@startuml
+node "Model Classes" {
+    class Product{
+        - productId: int
+        - productName: String
+        - productDescription: String
+        - productPrice: double
+        - categoryId: int
+        - productAttributeList: List<ProductAttribute>
+        - category: Category
+        + getter()
+        + setter()
+    }
+    class Category{
+        - categoryId: int
+        - categoryName: String
+        - productList: List<Product>
+        - attributeList: List<Attribute>
+        + getter()
+        + setter()
+    }
+    class Attribute{
+        - attributeId: int
+        - attributeName: String
+        - categoryId: int
+        - category: Category
+        + getter()
+        + setter()
+    }
+    class ProductAttribute{
+        - productAttributeId: String
+        - attributeId: int
+        - productId: int
+        - attributeValue: String
+        - attribute: Attribute
+        - product: Product
+        + getter()
+        + setter()
+    }
+}
+@enduml

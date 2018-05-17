@@ -1,0 +1,62 @@
+@startuml
+node "DAO Classes" {
+    interface ProductDAO{
+        + getAllProduct()
+        + getProductById()
+        + getProductByCategoryId()
+        + addProduct()
+        + updateProduct()
+        + deleteProduct()
+    }
+    interface CategoryDAO{
+        + getAllCategory()
+        + getCategoryById()
+        + addCategory()
+        + updateCategory()
+        + deleteCategory()
+    }
+    interface AttributeDAO{
+        + getAttributeById()
+        + getAttributeByCategoryId()
+        + addAttribute()
+        + updateAttribute()
+        + deleteAttribute()
+    }
+    interface ProductAttributeDAO{
+        + getProductAttributeById()
+        + getProductAttributeProductId()
+        + addProductAttribute()
+        + updateProductAttribute()
+        + deleteProductAttribute()
+    }
+    class ProductDAOImp{
+            + getAllProduct()
+            + getProductById()
+            + getProductByCategoryId()
+            + addProduct()
+            + updateProduct()
+            + deleteProduct()
+    }
+    class CategoryDAOImp{
+        + getAllCategory()
+        + getCategoryById()
+        + addCategory()
+        + updateCategory()
+        + deleteCategory()
+    }
+    class AttributeDAOImp{
+        + getAttributeById()
+        + getAttributeByCategoryId()
+        + addAttribute()
+        + updateAttribute()
+        + deleteAttribute()
+    }
+    class ProductAttributeDAOImp{
+        + getProductAttributeById()
+        + getProductAttributeProductId()
+        + addProductAttribute()
+        + updateProductAttribute()
+        + deleteProductAttribute()
+    }
+}
+@enduml

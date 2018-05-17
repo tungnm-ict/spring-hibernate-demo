@@ -1,0 +1,8 @@
+@startuml
+package "Use Case Category" {
+:User:
+User -left-> (Create New Category)
+User --> (Modify Category)
+User --> (Delete Category)
+User -right-> (View All Category)
+@enduml

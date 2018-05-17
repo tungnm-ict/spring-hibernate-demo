@@ -1,0 +1,62 @@
+@startuml
+node "Service Classes" {
+    interface ProductService{
+        + getAllProduct()
+        + getProductById()
+        + getProductByCategoryId()
+        + addProduct()
+        + updateProduct()
+        + deleteProduct()
+    }
+    interface CategoryService{
+        + getAllCategory()
+        + getCategoryById()
+        + addCategory()
+        + updateCategory()
+        + deleteCategory()
+    }
+    interface AttributeService{
+        + getAttributeById()
+        + getAttributeByCategoryId()
+        + addAttribute()
+        + updateAttribute()
+        + deleteAttribute()
+    }
+    interface ProductAttributeService{
+        + getProductAttributeById()
+        + getProductAttributeProductId()
+        + addProductAttribute()
+        + updateProductAttribute()
+        + deleteProductAttribute()
+    }
+    class ProductServiceImp{
+        + getAllProduct()
+        + getProductById()
+        + getProductByCategoryId()
+        + addProduct()
+        + updateProduct()
+        + deleteProduct()
+    }
+    class CategoryServiceImp{
+        + getAllCategory()
+        + getCategoryById()
+        + addCategory()
+        + updateCategory()
+        + deleteCategory()
+    }
+    class AttributeServiceImp{
+        + getAttributeById()
+        + getAttributeByCategoryId()
+        + addAttribute()
+        + updateAttribute()
+        + deleteAttribute()
+    }
+    class ProductAttributeServiceImp{
+        + getProductAttributeById()
+        + getProductAttributeProductId()
+        + addProductAttribute()
+        + updateProductAttribute()
+        + deleteProductAttribute()
+    }
+}
+@enduml

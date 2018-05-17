@@ -1,0 +1,14 @@
+@startuml
+package "CategoryProduct Architecture" {
+    :User: -right-> [View]
+    [View] --> [Controller]
+    [Controller] --> [View]
+    [Controller]..>[Model]
+    [Controller] -right-> [Service]:<<call>>'
+    [DAO(Data Access Layer)] as DAO
+    [Service] -right-> DAO:<<call>>
+    database "mysql"
+    DAO --> mysql
+}
+
+@enduml

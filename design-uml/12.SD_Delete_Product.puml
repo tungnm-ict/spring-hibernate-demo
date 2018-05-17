@@ -1,0 +1,26 @@
+@startuml
+box "Sequent Diagram: Delete Product" #white
+actor User
+boundary View as V
+control ProductController as PC
+entity ProductService as PS
+entity ProductDAO as PD
+
+User -> V : Request to delete new product
+activate V
+V -> PC : Request to delete new product
+activate PC
+PC -> PS : Request to delete new product
+activate PS
+PS -> PD : Request to delete new product
+activate PD
+PD -> PD : Save to DB
+PD --> PS : Work done
+destroy PD
+PS --> PC : Work done
+destroy PS
+PC --> V : Redirect to product list page
+destroy PC
+V --> User : Show product list page
+destroy V
+@enduml

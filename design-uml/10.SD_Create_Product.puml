@@ -1,0 +1,26 @@
+@startuml
+box "Sequent Diagram: Create Product" #white
+actor User
+boundary View as V
+control ProductController as PC
+participant ProductService as PS
+participant ProductDAO as PD
+
+User -> V : Request to create new product
+activate V
+V -> PC : Request to create new product
+activate PC
+PC -> PS : Request to create new product
+activate PS
+PS -> PD : Request to create new product
+activate PD
+PD -> PD : Save to DB
+PD --> PS : Work done
+destroy PD
+PS --> PC : Work done
+destroy PS
+PC --> V : Redirect to product list page
+destroy PC
+V --> User : Show product list page
+destroy V
+@enduml

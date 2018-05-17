@@ -1,0 +1,7 @@
+@startuml
+package "Use Case Attribute" {
+:User:
+User -left-> (Create New Attribute)
+User --> (Modify Attribute)
+User --> (Delete Attribute)
+@enduml

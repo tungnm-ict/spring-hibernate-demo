@@ -1,0 +1,12 @@
+@startuml
+package "Use Case Product" {
+:User:
+(Create New Product) as CP
+User -left-> CP
+User --> (Modify Product)
+User --> (Delete Product)
+User -right-> (View All Product)
+
+CP ..> (Choose Category)
+CP ..> (Choose Attribute)
+@enduml
