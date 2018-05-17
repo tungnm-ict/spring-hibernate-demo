@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/main">
+<head>
+    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">CATE-PROD | Product Detail</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <th:block th:if="${selectedProduct==null}">
+        <!-- Message -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span>Please Choose one Product to display information !</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-header">
+                    <b class="text-lg">Product Detail</b>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    <th:block th:if="${selectedProduct!=null}">
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-header">
+                    <b class="text-lg" th:text="${selectedProduct.getProductName()}"></b>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+        <!--Page Product -->
+        <div class="row">
+            <div class="col-lg-12 margin-bottom">
+
+                <form method="post" id="formInput"
+                      th:action="@{/product/{proId}/update(proId=${selectedProduct.getProductId()})}"
+                      th:object="${selectedProduct}"
+                      role="form">
+                    <input type="hidden" name="productId" id="productId" th:field="*{productId}"
+                           th:value="${selectedProduct.getProductId()}">
+                    <div class="form-group" id="divProductName">
+                        <label for="productName" class="control-label">Product Name: </label>
+                        <input type="text" class="form-control" name="productName" id="productName"
+                               th:field="*{productName}"
+                               th:value="${selectedProduct.getProductName()}" placeholder="Input Product Name...">
+                        <div id="errorDivName" style="display: block">
+                            <label class="control-label" id="errorLabelName"></label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="divProductDescription">
+                        <label for="productDescription" class="control-label">Product Description: </label>
+                        <textarea class="form-control" name="productDescription" id="productDescription"
+                                  th:field="*{productDescription}"
+                                  th:value="${selectedProduct.getProductDescription()}"
+                                  placeholder="Input Product Description..."></textarea>
+                        <div id="errorDivDescription" style="display: block">
+                            <label class="control-label" id="errorLabelDescription"></label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="divProductPrice">
+                        <label for="productPrice" class="control-label">Product Price: </label>
+                        <input type="number" class="form-control" name="productPrice" id="productPrice"
+                               th:field="*{productPrice}"
+                               th:value="${selectedProduct.getProductPrice()}" placeholder="Input Product Price...">
+                        <div id="errorDivPrice" style="display: block">
+                            <label class="control-label" id="errorLabelPrice"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryId" class="control-label">Category: </label>
+                        <select class="form-control" name="categoryId" id="categoryId">
+                            <option th:each="cate: ${cateList}" th:value="${cate.getCategoryId()}"
+                                    th:text="${cate.getCategoryName()}"
+                                    th:selected="${cate.getCategoryId()==selectedProduct.getCategoryId()}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="divAttribute">
+                    </div>
+                    <button type="submit" class="btn btn-success" id="btnUpdate">Update</button>
+                    <a class="btn btn-default"
+                       th:href="@{/category/{categoryId}(categoryId=${selectedProduct.getCategoryId()})}">
+                        <i class="fa fa-remove" aria-hidden="true"></i> Cancel
+                    </a>
+                </form>
+            </div>
+        </div>
+        <!-- /.row -->
+        <!--Attribute-->
+        <div class="row">
+            <div class="col-lg-12">
+                <ol class="breadcrumb">
+                    <li class="active">
+                        <i class="fa fa-2x fa-list-alt"></i> <strong class="text-md">Attribute List</strong>
+                    </li>
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-success" id="btnAddAttribute">
+                            Add Attribute
+                        </button>
+                    </div>
+                    <div class="clearfix"></div>
+                </ol>
+                <div th:replace="product/component/modal_choose_attribute :: modal_choose_attribute"></div>
+            </div>
+        </div>
+        <!-- /.row -->
+        <!-- Page Attribute List -->
+        <div th:replace="product/component/attribute_list :: attribute_list"></div>
+    </th:block>
+</section>
+<section layout:fragment="javascript">
+    <script type="text/javascript">
+        var productId = [[${selectedProduct.getProductId()}]];
+        var categoryId = [[${selectedProduct.getCategoryId()}]];
+        var productAttributeCount = [[${selectedProduct.getProductAttributeList().size()}]];
+        var previousCategoryId = categoryId;
+        var errorName = false;
+        var errorPrice = false;
+        var errorAttr = false;
+        var modalType = true;
+        var selectAttribute = {};
+        $("#productName").on("input", function () {
+            validateProductName();
+        });
+        $("#productPrice").on("input", function () {
+            validateProductPrice();
+        });
+
+        function validateProductName() {
+            var productName = $("#productName").val();
+            if (productName.length == 0) {
+                $("#divProductName").addClass("has-error");
+                $("#errorDivName").css("display", "block");
+                $("#errorLabelName").html("Product Name can not be null");
+                errorName = true;
+            } else if (productName.length > 100) {
+                $("#divProductName").addClass("has-error");
+                $("#errorDivName").css("display", "block");
+                $("#errorLabelName").html("Product Name must be less than 100");
+                errorName = true;
+            } else {
+                $("#divProductName").removeClass("has-error");
+                $("#errorDivName").css("display", "none");
+                $("#errorLabelName").html("");
+                errorName = false;
+            }
+        }
+
+        function validateProductPrice() {
+            var productPrice = $("#productPrice").val();
+            if (productPrice.length == 0) {
+                $("#divProductPrice").addClass("has-error");
+                $("#errorDivPrice").css("display", "block");
+                $("#errorLabelPrice").html("Product Price can not be null");
+                errorPrice = true;
+            } else if (!(/^\d+(\.\d{0,5}){0,1}$/.test(productPrice))) {
+                $("#divProductPrice").addClass("has-error");
+                $("#errorDivPrice").css("display", "block");
+                $("#errorLabelPrice").html("Product Name must be number");
+                errorPrice = true;
+            } else {
+                $("#divProductPrice").removeClass("has-error");
+                $("#errorDivPrice").css("display", "none");
+                $("#errorLabelPrice").html("");
+                errorPrice = false;
+            }
+        }
+
+
+        $("#btnUpdate").on("click", function () {
+            validateProductName();
+            validateProductPrice();
+            return !errorName && !errorPrice;
+        });
+
+        function validateAttributeValue() {
+            var attrValue = $("#attrValue").val();
+            if (attrValue.length == 0) {
+                $("#divAttrValue").addClass("has-error");
+                $("#errorDivAttr").css("display", "block");
+                $("#errorLabelAttr").html("Attribute Value can not be null");
+                errorAttr = true;
+            } else if (attrValue.length > 100) {
+                $("#divAttrValue").addClass("has-error");
+                $("#errorDivAttr").css("display", "block");
+                $("#errorLabelAttr").html("Attribute Value must be less than 100");
+                errorAttr = true;
+            } else {
+                $("#divAttrValue").removeClass("has-error");
+                $("#errorDivAttr").css("display", "none");
+                $("#errorLabelAttr").html("");
+                errorAttr = false;
+            }
+        }
+
+        // VALIDATE ATTRIBUTE
+        $("#attrValue").on("input", function () {
+            validateAttributeValue();
+        });
+        //TODO Delete all attribute when select category
+        $("#categoryId").on('focus', function () {
+            previousCategoryId = this.value;
+        }).on("change", function () {
+            var selectedCategoryId = $("#categoryId").val();
+            if (productAttributeCount == 0) {
+                previousCategoryId = selectedCategoryId;
+                return;
+            }
+            if (selectedCategoryId != previousCategoryId) {
+                var check = confirm("Are you sure change Category.\nAll Attribute off Product will be deleted");
+                if (check) {
+                    console.log('previousCategoryId' + previousCategoryId);
+                    console.log('selectedCategoryId' + selectedCategoryId);
+                    $.ajax({
+                        url: '/product_attribute/destroy_all',
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        data: JSON.stringify(productId),
+                        cache: false,
+                        success: function (response) {
+                            $("#attrName").val('');
+                            if (response.code != 1000) {
+                                alert(response.message);
+                                $("#categoryId").val(previousCategoryId);
+                            } else {
+                                alert(response.message);
+                                previousCategoryId = selectedCategoryId;
+                                $('#bodyList').empty();
+                                productAttributeCount = 0;
+                                $("#noData").css('display', 'block');
+                            }
+                        }
+                    })
+                } else {
+                    $("#categoryId").val(previousCategoryId);
+                }
+            }
+        });
+
+        $('#btnAddAttribute').on('click', function () {
+            //LOAD CHOOSE ATTRIBUTE
+            $("#chooseAttribute").empty();
+            $.ajax({
+                url: '/attribute/load',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify($("#categoryId").val()),
+                cache: false,
+                success: function (response) {
+                    if (response.attribute_list != null) {
+                        var attributeList = JSON.parse(response.attribute_list);
+                        for (var id in attributeList) {
+                            $("#chooseAttribute").append("<option value='" + attributeList[id].attributeId + "'>" + attributeList[id].attributeName + "</option>");
+                        }
+                        $('#chooseAttributeModal').modal('show');
+                    } else {
+                        alert("This Category don't have any attribute !");
+                        $('#chooseAttributeModal').modal('hide');
+                    }
+
+                }
+            })
+        });
+        // ADD PRODUCT ATTRIBUTE
+        $("#btnChoose").on('click', function () {
+            validateAttributeValue();
+            if (errorAttr) {
+                return false;
+            }
+            var postData = {
+                "productId": productId,
+                "attributeId": $("#chooseAttribute").val(),
+                "attributeValue": $("#attrValue").val()
+            };
+            $.ajax({
+                url: '/product_attribute/store',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                cache: false,
+                success: function (response) {
+                    $("#attrName").val('');
+                    if (response.code != 1000) {
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                        var productAttribute = JSON.parse(response.attribute_insert);
+                        if (productAttributeCount == 0) {
+                            $("#noData").css('display', 'none');
+                        }
+                        productAttributeCount++;
+                        $('#bodyList')
+                            .append('<tr id="attr_' + productAttribute.productAttributeId + '"><th scope="row">' + productAttributeCount + '</th>' +
+                                '<td id="attrName_' + productAttribute.productAttributeId + '">' + $("#chooseAttribute option:selected").text() + '</td>' +
+                                '<td id="attrValue_' + productAttribute.productAttributeId + '">' + productAttribute.attributeValue + '</td>' +
+                                '<td><a href="#" class="btn btn-success" onclick="showAttributeDetail(' + productAttribute.productAttributeId + ',' + productAttribute.attributeId + ')">Detail</a></td>\n' +
+                                '<td><a href="#" class="btn btn-danger" onclick="deleteAttribute(' + productAttribute.productAttributeId + ')">Delete</a></td></tr>');
+                    }
+                }
+            });
+        });
+        // UPDATE PRODUCT ATTRIBUTE
+        $("#btnUpdateAttribute").on("click", function () {
+            validateAttributeValue();
+            if (errorAttr) {
+                return false;
+            }
+            var postData = {
+                "productAttributeId": selectAttribute['productAttributeId'],
+                "attributeId": selectAttribute['attributeId'],
+                "productId": productId,
+                "attributeValue": $("#attrValue").val(),
+            };
+            $.ajax({
+                url: '/product_attribute/update',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                cache: false,
+                success: function (response) {
+                    $("#attrName").val('');
+                    if (response.code != 1000) {
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                        var productAttribute = JSON.parse(response.attribute_update);
+                        console.log(productAttribute);
+                        $("#attrValue_" + selectAttribute['productAttributeId']).html(productAttribute.attributeValue);
+                    }
+                }
+            });
+        })
+
+        function deleteAttribute(productAttributeId) {
+            selectAttribute['productAttributeId'] = productAttributeId;
+            selectAttribute['attributeName'] = $("#attrName_" + productAttributeId).html();
+            selectAttribute['attributeValue'] = $("#attrValue_" + productAttributeId).html();
+            var check = confirm("Are you sure delete Attribute: " + selectAttribute['attributeName']);
+            if (check) {
+                $.ajax({
+                    url: '/product_attribute/destroy',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: JSON.stringify(productAttributeId),
+                    cache: false,
+                    success: function (response) {
+                        $("#attrName").val('');
+                        if (response.code != 1000) {
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                            $("#attr_" + productAttributeId).remove();
+                            productAttributeCount--;
+                            if (productAttributeCount == 0) {
+                                $("#noData").css('display', 'block');
+                            }
+                        }
+                    }
+                })
+            }
+        }
+
+        function showAttributeDetail(productAttributeId, attributeId) {
+            modalType = false;
+            selectAttribute['productAttributeId'] = productAttributeId;
+            selectAttribute['attributeId'] = attributeId;
+            selectAttribute['attributeName'] = $("#attrName_" + productAttributeId).html();
+            selectAttribute['attributeValue'] = $("#attrValue_" + productAttributeId).html();
+            $("#attrName").val(selectAttribute['attributeName']);
+            $("#attrValue").val(selectAttribute['attributeValue']);
+            $('#chooseAttributeModal').modal('show');
+        }
+
+        $('#chooseAttributeModal').on('show.bs.modal', function (e) {
+            if (modalType) {//choose
+                $("#attValue").val('');
+                $("#attributeModalTitle").html("Choose Attribute");
+                $("#divChooseAttribute").css("display", "block");
+                $("#divAttrName").css("display", "none");
+                $("#btnChoose").css("display", "inline-block");
+                $("#btnUpdateAttribute").css("display", "none");
+            } else {// update
+                $("#attributeModalTitle").html("Attribute Detail");
+                $("#divChooseAttribute").css("display", "none");
+                $("#divAttrName").css("display", "block");
+                $("#btnChoose").css("display", "none");
+                $("#btnUpdateAttribute").css("display", "inline-block");
+
+            }
+        })
+        $('#chooseAttributeModal').on('hide.bs.modal', function (e) {
+            modalType = true;
+        })
+    </script>
+</section>
+</body>
+</html>
