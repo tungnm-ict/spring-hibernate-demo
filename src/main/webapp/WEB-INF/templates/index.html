@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/main">
 <body>
-    <h1>HOME PAGE</h1>
-    <h3>Hello Spring Hibernate Thymeleaf</h3>
+<section layout:fragment="content">
+    <h1>Home PAGE</h1>
+</section>
 </body>
 </html>
